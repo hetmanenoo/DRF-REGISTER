@@ -8,6 +8,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
 from .models import Register
+from django.contrib.auth.hashers import make_password
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,8 +20,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         data = super(RegisterSerializer, self).validate(attrs)
         if len(data['password']) <= 8:
             raise serializers.ValidationError('Password small')
-        else:
-            hash_object = hashlib.md5(data['password'].encode('utf-8'))
-            data['password'] = hash_object.hexdigest()
+        # else:
+        #     hash_object = hashlib.md5(data['password'].encode('utf-8'))
+        #     data['password'] = hash_object.hexdigest()
+
         return data
 
+    def validate_password(self, value: str) -> str:
+        return make_password(value)

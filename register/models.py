@@ -1,9 +1,24 @@
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import User, AbstractUser, BaseUserManager
 
 
-# Create your models here.
+class UserManager(BaseUserManager):
+    def create_user(self, email, username, password, alias=None):
+        user = self.model(
+            email = self.normalize_email(email),
+            username = username,)
+        user.set_password(password)
+        user.save()
+        return user
+
 class Register(AbstractUser):
-    pass
+    email = models.EmailField(null=False, unique=True)
+    username = models.CharField(max_length=25, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserManager()
+    USERNAME_FIELD = "username"
+    # REQUIRED_FIELDS = ["username",]
 
 
